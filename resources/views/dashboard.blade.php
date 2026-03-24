@@ -163,7 +163,7 @@
                 amountError.classList.add('hidden');
             } else {
                 amountInput.classList.add('border-red-400', 'bg-red-50');
-                amountError.innerText = 'Amount is required';
+                amountError.innerText = 'Please enter amount to add';
                 amountError.classList.remove('hidden');
             }
         };
@@ -270,7 +270,27 @@
         document.getElementById('razorBtn').onclick = async () => {
             const amount = amountInput.value;
             if(!amount || amount < 1) {
-                Swal.fire('Input Error', 'Please enter the amount you want to add!', 'error');
+                // Add validation styles
+                amountInput.classList.add('border-red-400', 'bg-red-50', 'animate__animated', 'animate__shakeX');
+                amountError.innerText = 'Please Enter Amount to Add';
+                amountError.classList.remove('hidden');
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Amount Required',
+                    text: 'Please enter amount to add!',
+                    confirmButtonColor: '#7c3aed',
+                    customClass: {
+                        popup: 'rounded-[2rem]',
+                        confirmButton: 'rounded-xl px-8 py-3 font-bold'
+                    }
+                });
+                
+                // Remove shake animation after it completes
+                setTimeout(() => {
+                    amountInput.classList.remove('animate__shakeX');
+                }, 1000);
+                
                 return;
             }
 
@@ -296,10 +316,25 @@
                             body: JSON.stringify(response)
                         });
                         const result = await verify.json();
+                        
+                        if(result.status === 'success') {
+                            amountInput.value = ''; // Reset amount field
+                            amountInput.classList.remove('border-red-400', 'bg-red-50');
+                            amountError.classList.add('hidden');
+                        }
+
                         Swal.fire({
-                            title: result.status === 'success' ? 'Success!' : 'Failed!',
+                            title: `<span class="text-xl font-black ${result.status === 'success' ? 'text-green-600' : 'text-red-600'} uppercase tracking-tighter">${result.status === 'success' ? 'Payment Verified!' : 'Payment Failed!'}</span>`,
                             text: result.message,
-                            icon: result.status === 'success' ? 'success' : 'error'
+                            icon: result.status === 'success' ? 'success' : 'error',
+                            confirmButtonText: result.status === 'success' ? 'Perfect, Thanks!' : 'Try Again',
+                            confirmButtonColor: result.status === 'success' ? '#10b981' : '#ef4444',
+                            background: '#ffffff',
+                            padding: '2.5rem',
+                            customClass: {
+                                popup: 'rounded-[2.5rem] shadow-3xl border-2 border-gray-50',
+                                confirmButton: 'rounded-2xl px-12 py-4 font-black text-sm tracking-widest uppercase hover:scale-105 transition-transform shadow-lg shadow-indigo-100'
+                            }
                         });
                     },
                     "theme": { "color": "#7c3aed" }

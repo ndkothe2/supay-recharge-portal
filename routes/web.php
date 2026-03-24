@@ -11,7 +11,4 @@ Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [RechargeController::class, 'index']);
-    Route::post('/api/recharge', [RechargeController::class, 'processRecharge']);
-    Route::post('/api/create-order', [RechargeController::class, 'createOrder']);
-    Route::post('/api/verify-payment', [RechargeController::class, 'verifyPayment']);
 });
